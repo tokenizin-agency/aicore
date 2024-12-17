@@ -1,0 +1,33 @@
+{
+  "name": "@tokenizin/ai-repomap",
+  "version": "0.1.0",
+  "type": "module",
+  "bin": {
+    "tokenizin-repomap": "./dist/mapper.js"
+  },
+  "scripts": {
+    "start": "tsx bin/mapper.ts",
+    "build": "tsup bin/mapper.ts --format esm --dts",
+    "prepublishOnly": "pnpm run build",
+    "dev": "tsx watch bin/mapper.ts",
+    "release": "pnpm run build && changeset publish"
+  },
+  "dependencies": {
+    "tree-sitter": "^0.20.6",
+    "tree-sitter-javascript": "^0.20.1",
+    "tree-sitter-typescript": "^0.20.3"
+  },
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "@types/node": "^20.10.2",
+    "tsup": "^8.0.0",
+    "tsx": "^4.0.0",
+    "typescript": "^5.0.0"
+  },
+  "publishConfig": {
+    "access": "public"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}
