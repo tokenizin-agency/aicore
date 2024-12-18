@@ -35,7 +35,7 @@ A powerful monorepo of AI development tools designed to enhance your coding work
 
 ```bash
 # Clone the repository
-git clone https://github.com/yourusername/tokenizin.git
+git clone https://github.com/tokenizin-agency/tokenizin.git
 cd tokenizin
 
 # Install dependencies

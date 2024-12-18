@@ -173,3 +173,50 @@ dist
 
 # Finder (MacOS) folder config
 .DS_Store
+
+# Build output
+dist/
+*.tsbuildinfo
+
+# Dependencies
+node_modules/
+.pnpm-store/
+
+# Environment
+.env
+.env.*
+!.env.example
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# Testing
+coverage/
+
+# Temporary files
+.tmp/
+.temp/
+.cache/
+
+# Changesets
+.changeset/*.md
+!.changeset/config.json
+
+# Package manager
+.npmrc
+.yarnrc
+.pnpmrc

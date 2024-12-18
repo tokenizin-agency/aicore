@@ -7,7 +7,8 @@
   },
   "scripts": {
     "start": "tsx bin/mapper.ts",
-    "build": "tsup bin/mapper.ts --format esm --dts",
+    "build": "tsup bin/mapper.ts --format esm --dts --out-dir dist",
+    "clean": "rm -rf dist",
     "prepublishOnly": "pnpm run build",
     "dev": "tsx watch bin/mapper.ts",
     "release": "pnpm run build && changeset publish"
@@ -15,7 +16,8 @@
   "dependencies": {
     "tree-sitter": "^0.20.6",
     "tree-sitter-javascript": "^0.20.1",
-    "tree-sitter-typescript": "^0.20.3"
+    "tree-sitter-typescript": "^0.20.3",
+    "ignore": "^5.3.0"
   },
   "devDependencies": {
     "@changesets/cli": "^2.27.1",

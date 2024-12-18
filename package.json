@@ -5,7 +5,8 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "pnpm -r build",
+    "clean": "rm -rf packages/*/dist",
+    "build": "pnpm clean && pnpm -r build",
     "release": "changeset publish",
     "version": "changeset version"
   },

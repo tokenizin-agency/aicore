@@ -12,10 +12,16 @@ import { execSync } from "child_process";
  * @interface SymbolInfo
  * @property {string} name - The name of the symbol
  * @property {string} kind - The type of the symbol ('function' or 'class')
+ * @property {string[]} properties - The properties defined in the class
+ * @property {string[]} methods - The methods defined in the class
+ * @property {string} extends - The name of the superclass if any
  */
 interface SymbolInfo {
   name: string;
   kind: string;
+  properties?: string[];
+  methods?: string[];
+  extends?: string;
 }
 
 /**
@@ -36,16 +42,71 @@ interface ImportInfo {
  * @property {SymbolInfo[]} symbols - Array of symbols found in the file
  * @property {ImportInfo[]} imports - Array of import statements found in the file
  * @property {boolean} hasJsx - Indicates if the file contains JSX elements
+ * @property {string[]} jsxElements - Array of custom JSX element names used in the file
  */
 interface FileInfo {
   file: string;
   symbols?: SymbolInfo[];
   imports?: (string | ImportInfo)[];
   hasJsx?: boolean;
+  jsxElements?: string[];
 }
 
 const IGNORE_DIRS = new Set(["node_modules", ".git"]);
 const ROOT_DIR = ".";
+const WEB_ELEMENTS = new Set([
+  "div",
+  "span",
+  "p",
+  "a",
+  "button",
+  "input",
+  "form",
+  "img",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "h5",
+  "h6",
+  "ul",
+  "ol",
+  "li",
+  "table",
+  "tr",
+  "td",
+  "th",
+  "nav",
+  "header",
+  "footer",
+  "main",
+  "section",
+  "article",
+  "aside",
+  "label",
+  "select",
+  "option",
+  "textarea",
+  "br",
+  "hr",
+  "canvas",
+  "svg",
+  "path",
+  "circle",
+  "rect",
+  "video",
+  "audio",
+  "source",
+  "iframe",
+  "script",
+  "style",
+  "link",
+  "meta",
+  "title",
+  "head",
+  "body",
+  "html",
+]);
 
 const jsParser = new Parser();
 jsParser.setLanguage(JavaScript);
@@ -88,6 +149,7 @@ function parseFile(filePath: string): FileInfo {
   const symbols: SymbolInfo[] = [];
   const imports: (string | ImportInfo)[] = [];
   let hasJsx = false;
+  const jsxElements = new Set<string>();
 
   /**
    * Process a node in the AST to extract symbol information
@@ -138,8 +200,62 @@ function parseFile(filePath: string): FileInfo {
         const className = node.children.find(
           (n: any) => n.type === "identifier"
         )?.text;
+
         if (className) {
-          symbols.push({ name: className, kind: "class" });
+          const classInfo: SymbolInfo = { name: className, kind: "class" };
+
+          // Get superclass if exists
+          const heritage = node.children.find(
+            (n: any) => n.type === "class_heritage"
+          );
+          if (heritage) {
+            const superclass = heritage.children
+              .find((n: any) => n.type === "extends_clause")
+              ?.children.find((n: any) => n.type === "identifier")?.text;
+            if (superclass) {
+              classInfo.extends = superclass;
+            }
+          }
+
+          // Get class body
+          const body = node.children.find((n: any) => n.type === "class_body");
+          if (body) {
+            const properties: string[] = [];
+            const methods: string[] = [];
+
+            // Process class members
+            for (let i = 0; i < body.childCount; i++) {
+              const member = body.child(i);
+              if (!member) continue;
+
+              switch (member.type) {
+                case "method_definition":
+                  const methodName = member.children.find(
+                    (n: any) => n.type === "property_identifier"
+                  )?.text;
+                  if (methodName) methods.push(methodName);
+                  break;
+
+                case "public_field_definition":
+                case "private_field_definition":
+                  const fieldName = member.children.find(
+                    (n: any) => n.type === "property_identifier"
+                  )?.text;
+                  if (fieldName) properties.push(fieldName);
+                  break;
+
+                case "class_declaration":
+                  // Recursively process nested classes
+                  processNode(member);
+                  break;
+              }
+            }
+
+            if (properties.length > 0) classInfo.properties = properties;
+            if (methods.length > 0) classInfo.methods = methods;
+          }
+
+          symbols.push(classInfo);
         }
         break;
 
@@ -173,19 +289,34 @@ function parseFile(filePath: string): FileInfo {
         break;
 
       case "jsx_element":
+        hasJsx = true;
+        const elementName = node.children[0]?.children[0]?.text;
+        if (elementName && !WEB_ELEMENTS.has(elementName.toLowerCase())) {
+          jsxElements.add(elementName);
+        }
+        break;
+
       case "jsx_self_closing_element":
+        hasJsx = true;
+        const selfClosingName = node.children[0]?.text;
+        if (
+          selfClosingName &&
+          !WEB_ELEMENTS.has(selfClosingName.toLowerCase())
+        ) {
+          jsxElements.add(selfClosingName);
+        }
+        break;
+
       case "jsx_fragment":
         hasJsx = true;
         break;
     }
 
-    // Recursively check children for JSX
-    if (!hasJsx) {
-      for (let i = 0; i < node.childCount; i++) {
-        const child = node.child(i);
-        if (child) {
-          processNode(child);
-        }
+    // Recursively check children
+    for (let i = 0; i < node.childCount; i++) {
+      const child = node.child(i);
+      if (child) {
+        processNode(child);
       }
     }
   }
@@ -196,7 +327,12 @@ function parseFile(filePath: string): FileInfo {
   const result: FileInfo = { file: filePath };
   if (symbols.length > 0) result.symbols = symbols;
   if (imports.length > 0) result.imports = imports;
-  if (hasJsx) result.hasJsx = true;
+  if (hasJsx) {
+    result.hasJsx = true;
+    if (jsxElements.size > 0) {
+      result.jsxElements = Array.from(jsxElements);
+    }
+  }
 
   return result;
 }
@@ -260,15 +396,20 @@ function getPackageJson() {
 // Process all JavaScript files and collect results
 const results: FileInfo[] = [];
 let hasReactFiles = false;
+const allCustomElements = new Set<string>();
 
 for (const file of getJSFiles(ROOT_DIR)) {
   const fileInfo = parseFile(file);
   const hasContent =
     (fileInfo.symbols && fileInfo.symbols.length > 0) ||
-    (fileInfo.imports && fileInfo.imports.length > 0);
+    (fileInfo.imports && fileInfo.imports.length > 0) ||
+    (fileInfo.jsxElements && fileInfo.jsxElements.length > 0);
 
   if (hasContent) {
     results.push(fileInfo);
+    if (fileInfo.jsxElements) {
+      fileInfo.jsxElements.forEach((element) => allCustomElements.add(element));
+    }
     if (
       fileInfo.hasJsx ||
       fileInfo.imports?.some((imp) =>
@@ -289,11 +430,10 @@ const output = {
     git: getGitInfo(),
     package: getPackageJson(),
     hasReact: hasReactFiles,
+    customJsxElements: Array.from(allCustomElements),
     files: results,
   },
 };
 
-// Output results as minified JSON wrapped in markdown
-// console.log("```json");
+// Output results as minified JSON
 process.stdout.write(JSON.stringify(output));
-// console.log("```");
