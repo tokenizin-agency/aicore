@@ -4,6 +4,12 @@
 
 ### Minor Changes
 
+- semantic bump
+
+## 0.2.0
+
+### Minor Changes
+
 - e2b2dd9: gen
 - added classes and more inspection output
 

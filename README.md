@@ -6,8 +6,8 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](LICENSE)
-[![CI](https://img.shields.io/github/actions/workflow/status/tokenizin-agency/tokenizin/ci.yml?branch=main&style=for-the-badge&label=CI)](https://github.com/tokenizin-agency/tokenizin/actions/workflows/ci.yml)
-[![CodeQL](https://img.shields.io/github/actions/workflow/status/tokenizin-agency/tokenizin/codeql.yml?branch=main&style=for-the-badge&label=CodeQL)](https://github.com/tokenizin-agency/tokenizin/actions/workflows/codeql.yml)
+[![CI](https://img.shields.io/github/actions/workflow/status/tokenizin-agency/aicore/ci.yml?branch=main&style=for-the-badge&label=CI)](https://github.com/tokenizin-agency/aicore/actions/workflows/ci.yml)
+[![CodeQL](https://img.shields.io/github/actions/workflow/status/tokenizin-agency/aicore/codeql.yml?branch=main&style=for-the-badge&label=CodeQL)](https://github.com/tokenizin-agency/aicore/actions/workflows/codeql.yml)
 
 </div>
 
@@ -38,8 +38,8 @@ A powerful monorepo of AI development tools designed to enhance your coding work
 
 ```bash
 # Clone the repository
-git clone https://github.com/tokenizin-agency/tokenizin.git
-cd tokenizin
+git clone https://github.com/tokenizin-agency/aicore.git
+cd aicore
 
 # Install dependencies
 pnpm install
