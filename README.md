@@ -6,6 +6,8 @@
 [![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
 [![Node.js](https://img.shields.io/badge/Node.js-339933?style=for-the-badge&logo=nodedotjs&logoColor=white)](https://nodejs.org/)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg?style=for-the-badge)](LICENSE)
+[![CI](https://img.shields.io/github/actions/workflow/status/tokenizin-agency/tokenizin/ci.yml?branch=main&style=for-the-badge&label=CI)](https://github.com/tokenizin-agency/tokenizin/actions/workflows/ci.yml)
+[![CodeQL](https://img.shields.io/github/actions/workflow/status/tokenizin-agency/tokenizin/codeql.yml?branch=main&style=for-the-badge&label=CodeQL)](https://github.com/tokenizin-agency/tokenizin/actions/workflows/codeql.yml)
 
 </div>
 
@@ -22,7 +24,8 @@ A powerful monorepo of AI development tools designed to enhance your coding work
 
 | Package | Description | Version |
 |---------|-------------|---------|
-| [@tokenizin/ai-repomap](./packages/aicore/) | Repository analyzer for AI tools | [![npm](https://img.shields.io/npm/v/@tokenizin/ai-repomap.svg?style=flat-square)](https://www.npmjs.com/package/@tokenizin/ai-repomap) |
+| [@tokenizin/ai-repomap](./packages/ai-repomap/) | Repository analyzer for AI tools | [![npm](https://img.shields.io/npm/v/@tokenizin/ai-repomap.svg?style=flat-square)](https://www.npmjs.com/package/@tokenizin/ai-repomap) |
+| [@tokenizin/config](./packages/config/) | Shared configurations for TypeScript, ESLint, and Prettier | [![private](https://img.shields.io/badge/private-true-red.svg?style=flat-square)]() |
 
 ## 🛠️ Development
 
@@ -42,23 +45,29 @@ cd tokenizin
 pnpm install
 
 # Build all packages
-pnpm -r build
-
-# Run the mapper
-pnpm -F @tokenizin/ai-repomap start
+pnpm build
 ```
 
 ### Available Scripts
 
 ```bash
-# Development mode with watch
-pnpm -F @tokenizin/ai-repomap dev
+# Build all packages
+pnpm build
 
-# Build specific package
-pnpm -F @tokenizin/ai-repomap build
+# Run tests
+pnpm test
 
-# Run specific package
-pnpm -F @tokenizin/ai-repomap start
+# Run linting
+pnpm lint
+
+# Format code
+pnpm format
+
+# Create a changeset
+pnpm changeset
+
+# Release packages
+pnpm release
 ```
 
 ## 📖 Usage
@@ -80,9 +89,13 @@ The tool will analyze your repository and output a detailed JSON structure conta
 - JSX usage detection
 - Git metadata
 
+## 🤝 Security
+
+Please see our [Security Policy](./SECURITY.md) for reporting vulnerabilities.
+
 ## 🤝 Contributing
 
-Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
+Contributions are welcome! Please read our [Contributing Guide](./CONTRIBUTING.md) for details on our code of conduct and the process for submitting pull requests.
 
 ## 📄 License
 

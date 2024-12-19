@@ -27,6 +27,13 @@ jobs:
 
       - name: Install dependencies
         run: pnpm install
+
+      - name: Clean
+        run: pnpm clean
+
+      - name: Build
+        run: pnpm build
+
       - name: Create Release Pull Request or Publish
         id: changesets
         uses: changesets/action@v1

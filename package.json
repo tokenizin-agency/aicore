@@ -1,22 +1,35 @@
 {
-  "name": "aicore",
+  "name": "tokenizin",
   "private": true,
-  "workspaces": [
-    "packages/*"
-  ],
+  "version": "0.0.0",
+  "description": "A powerful monorepo of AI development tools",
   "scripts": {
-    "clean": "rm -rf packages/*/dist",
-    "build": "pnpm clean && pnpm -r build",
-    "release": "changeset publish",
-    "version": "changeset version"
-  },
-  "devDependencies": {
-    "@changesets/cli": "^2.27.10",
-    "@types/node": "^20.10.2",
-    "typescript": "^5.0.0"
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "clean": "pnpm -r clean",
+    "lint": "pnpm -r lint",
+    "format": "pnpm -r format",
+    "changeset": "changeset",
+    "version-packages": "changeset version",
+    "release": "pnpm build && changeset publish"
   },
   "engines": {
     "node": ">=18",
     "pnpm": ">=8"
-  }
+  },
+  "packageManager": "pnpm@8.x",
+  "devDependencies": {
+    "@changesets/cli": "^2.27.1",
+    "@typescript-eslint/eslint-plugin": "^6.0.0",
+    "@typescript-eslint/parser": "^6.0.0",
+    "eslint": "^8.0.0",
+    "eslint-config-prettier": "^9.0.0",
+    "prettier": "^3.0.0",
+    "typescript": "^5.0.0",
+    "husky": "^8.0.0",
+    "lint-staged": "^15.0.0"
+  },
+  "workspaces": [
+    "packages/*"
+  ]
 }

@@ -7,7 +7,7 @@
   },
   "scripts": {
     "start": "tsx bin/mapper.ts",
-    "build": "tsup bin/mapper.ts --format esm --dts --out-dir dist",
+    "build": "tsup bin/mapper.ts --format esm --dts --clean --out-dir dist",
     "clean": "rm -rf dist",
     "prepublishOnly": "pnpm run build",
     "dev": "tsx watch bin/mapper.ts",
