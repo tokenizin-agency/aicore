@@ -1,6 +1,7 @@
 {
   "name": "@tokenizin/ai-repomap",
-  "version": "1.0.0",
+  "version": "2.1.0",
+  "description": "AI-powered codebase mapping tool that analyzes and generates a detailed map of your project structure, with support for JavaScript, TypeScript, Flutter, Dart, and Android.",
   "type": "module",
   "bin": {
     "tokenizin-repomap": "./dist/mapper.js"
@@ -11,13 +12,14 @@
     "clean": "rm -rf dist",
     "prepublishOnly": "pnpm run build",
     "dev": "tsx watch bin/mapper.ts",
-    "release": "pnpm run build && changeset publish"
+    "release": "pnpm run build && changeset publish",
+    "full-release": "pnpm run build && pnpm changeset && git add . && git commit -m \"chore: add changeset\" && pnpm changeset version && git add . && git commit -m \"chore: update versions\" && pnpm changeset publish && git push --follow-tags"
   },
   "dependencies": {
     "tree-sitter": "^0.20.6",
     "tree-sitter-javascript": "^0.20.1",
     "tree-sitter-typescript": "^0.20.3",
-    "tree-sitter-dart": "^0.1.1",
+    "tree-sitter-dart": "^1.0.0",
     "ignore": "^5.3.0"
   },
   "devDependencies": {
@@ -32,5 +34,24 @@
   },
   "engines": {
     "node": ">=18"
-  }
+  },
+  "keywords": [
+    "codebase-analysis",
+    "code-mapping",
+    "static-analysis",
+    "javascript",
+    "typescript",
+    "flutter",
+    "dart",
+    "android"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tokenizin/tokigen.git"
+  },
+  "bugs": {
+    "url": "https://github.com/tokenizin/tokigen/issues"
+  },
+  "homepage": "https://github.com/tokenizin/tokigen#readme",
+  "usage": "tokenizin-repomap [directory-path]"
 }

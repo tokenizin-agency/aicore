@@ -1,11 +1,18 @@
 #!/usr/bin/env node
 
 import { readdirSync, readFileSync, existsSync } from 'fs';
-import { join, extname } from 'path';
+import { join, extname, resolve } from 'path';
 import Parser from 'tree-sitter';
 import JavaScript from 'tree-sitter-javascript';
 import TypeScript from 'tree-sitter-typescript';
 import { execSync } from 'child_process';
+
+// Get target directory from command line args or use current directory
+const targetDir = process.argv[2] ? resolve(process.argv[2]) : '.';
+if (!existsSync(targetDir)) {
+  console.error(`Error: Directory "${targetDir}" does not exist`);
+  process.exit(1);
+}
 
 /**
  * Represents information about a symbol (function or class) found in the code
@@ -86,7 +93,7 @@ interface FileInfo {
 }
 
 const IGNORE_DIRS = new Set(['node_modules', '.git', 'build', '.dart_tool', '.pub-cache']);
-const ROOT_DIR = '.';
+const ROOT_DIR = targetDir;
 
 // Add Flutter/Dart specific elements
 const FLUTTER_WIDGETS = new Set([
@@ -623,36 +630,44 @@ function parseAndroidManifest(content: string): { package?: string; components?:
  */
 function getGitInfo() {
   try {
-    // Check if git repo exists first
-    execSync('git rev-parse --git-dir', { stdio: 'ignore' });
+    // Check if git repo exists first and change to ROOT_DIR
+    const originalDir = process.cwd();
+    process.chdir(ROOT_DIR);
 
-    const branch = execSync('git rev-parse --abbrev-ref HEAD', {
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'ignore'],
-    }).trim();
-    const remoteUrl = execSync('git config --get remote.origin.url', {
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'ignore'],
-    }).trim();
-    const lastCommit = execSync('git log -1 --format=%H', {
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'ignore'],
-    }).trim();
-    const authorName = execSync('git config user.name', {
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'ignore'],
-    }).trim();
-    const authorEmail = execSync('git config user.email', {
-      encoding: 'utf8',
-      stdio: ['pipe', 'pipe', 'ignore'],
-    }).trim();
+    try {
+      execSync('git rev-parse --git-dir', { stdio: 'ignore' });
 
-    return {
-      branch,
-      remoteUrl,
-      lastCommit,
-      author: { name: authorName, email: authorEmail },
-    };
+      const branch = execSync('git rev-parse --abbrev-ref HEAD', {
+        encoding: 'utf8',
+        stdio: ['pipe', 'pipe', 'ignore'],
+      }).trim();
+      const remoteUrl = execSync('git config --get remote.origin.url', {
+        encoding: 'utf8',
+        stdio: ['pipe', 'pipe', 'ignore'],
+      }).trim();
+      const lastCommit = execSync('git log -1 --format=%H', {
+        encoding: 'utf8',
+        stdio: ['pipe', 'pipe', 'ignore'],
+      }).trim();
+      const authorName = execSync('git config user.name', {
+        encoding: 'utf8',
+        stdio: ['pipe', 'pipe', 'ignore'],
+      }).trim();
+      const authorEmail = execSync('git config user.email', {
+        encoding: 'utf8',
+        stdio: ['pipe', 'pipe', 'ignore'],
+      }).trim();
+
+      return {
+        branch,
+        remoteUrl,
+        lastCommit,
+        author: { name: authorName, email: authorEmail },
+      };
+    } finally {
+      // Always restore original directory
+      process.chdir(originalDir);
+    }
   } catch {
     return null;
   }
@@ -702,6 +717,7 @@ for (const file of getJSFiles(ROOT_DIR)) {
 // Create final output with project metadata
 const output = {
   timestamp: new Date().toISOString(),
+  targetDirectory: ROOT_DIR,
   project: {
     git: getGitInfo(),
     package: getPackageJson(),
