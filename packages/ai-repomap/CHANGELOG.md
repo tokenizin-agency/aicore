@@ -1,5 +1,11 @@
 # @tokenizin/ai-repomap
 
+## 1.0.0
+
+### Major Changes
+
+- added dart and flutter
+
 ## 0.2.0
 
 ### Minor Changes
